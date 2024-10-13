@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2024.10.07 든든전세주택</title>
+  <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=lj8r062dj4"></script>
+  <style>
+        /* 커스텀 마커 스타일 */
+        .custom-marker {
+          position: relative;
+          width: 40px;
+          height: 40px;
+          background-color: #ff6347; /* 핀의 색상 */
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: white;
+          font-size: 14px;
+          font-weight: bold;
+          box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+    
+        .custom-marker::after {
+          content: '';
+          position: absolute;
+          bottom: -10px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0;
+          height: 0;
+          border-left: 10px solid transparent;
+          border-right: 10px solid transparent;
+          border-top: 10px solid #ff6347; /* 핀 아래 꼭지점 색상 */
+        }
+  </style>
+</head>
+
+<body>
+  <div id="map" style="width:100%;height:800px;"></div>
+
+  <script>
+    // 네이버 지도 초기 설정
+    var map = new naver.maps.Map('map', {
+      center: new naver.maps.LatLng(37.6197193, 127.0265323), // 기본 중심 좌표
+      zoom: 12 // 줌 레벨 설정
+    });
+
+    // 주어진 데이터 배열
+    var markerData = [
+    {"lat":"37.5960856","lng":"127.0831507","number":1,"title":"1: 서울 중랑구 상봉동 116-17"},
+    {"lat":"37.5994885","lng":"126.9249638","number":2,"title":"2: 서울 은평구 응암동 99-60"},
+    {"lat":"37.5910716","lng":"126.9185210","number":3,"title":"3: 서울 은평구 응암동 366-6"},
+    {"lat":"37.6008918","lng":"126.9066179","number":4,"title":"4: 서울 은평구 신사동 270-36"},
+    {"lat":"37.6220075","lng":"126.9302570","number":5,"title":"5: 서울 은평구 불광동 197"},
+    {"lat":"37.5254208","lng":"126.8543766","number":6,"title":"6: 서울 양천구 신정동 923-20"},
+    {"lat":"37.5369972","lng":"126.8338586","number":7,"title":"7: 서울 양천구 신월동 86-4"},
+    {"lat":"37.5277436","lng":"126.8370093","number":8,"title":"8: 서울 양천구 신월동 242-4"},
+    {"lat":"37.5300838","lng":"126.8290436","number":9,"title":"9: 서울 양천구 신월동 202-2"},
+    {"lat":"37.5316056","lng":"126.8316382","number":10,"title":"10: 서울 양천구 신월동 131-2"},
+    {"lat":"37.6030003","lng":"126.9479540","number":11,"title":"11: 서울 서대문구 홍은동 10-236"},
+    {"lat":"37.5823996","lng":"126.9167702","number":12,"title":"12: 서울 서대문구 북가좌동 3-101"},
+    {"lat":"37.5910577","lng":"127.0458713","number":13,"title":"13: 서울 동대문구 청량리동 206-7"},
+    {"lat":"37.6595217","lng":"127.0380515","number":14,"title":"14: 서울 도봉구 쌍문동 31-46"},
+    {"lat":"37.6721957","lng":"127.0468640","number":15,"title":"15: 서울 도봉구 도봉동 634-6"},
+    {"lat":"37.6721957","lng":"127.0468640","number":16,"title":"16: 서울 도봉구 도봉동 634-6"},
+    {"lat":"37.4514666","lng":"126.9088733","number":17,"title":"17: 서울 금천구 시흥동 828-4"},
+    {"lat":"37.4540808","lng":"126.9080666","number":18,"title":"18: 서울 금천구 시흥동 823-37"},
+    {"lat":"37.4728148","lng":"126.9053134","number":19,"title":"19: 서울 금천구 독산동 993-55"},
+    {"lat":"37.4790967","lng":"126.9044842","number":20,"title":"20: 서울 금천구 독산동 877-1"},
+    {"lat":"37.4650210","lng":"126.8935326","number":21,"title":"21: 서울 금천구 독산동 1006-114"},
+    {"lat":"37.4950404","lng":"126.8398585","number":22,"title":"22: 서울 구로구 오류동 6-59"},
+    {"lat":"37.4996991","lng":"126.8883845","number":23,"title":"23: 서울 구로구 구로동 109-1"},
+    {"lat":"37.4981121","lng":"126.8464611","number":24,"title":"24: 서울 구로구 개봉동 70-30"},
+    {"lat":"37.4919665","lng":"126.8524659","number":25,"title":"25: 서울 구로구 개봉동 322-4"},
+    {"lat":"37.4919665","lng":"126.8524659","number":26,"title":"26: 서울 구로구 개봉동 322-4"},
+    {"lat":"37.4766825","lng":"126.9385664","number":27,"title":"27: 서울 관악구 신림동 94-25"},
+    {"lat":"37.4766825","lng":"126.9385664","number":28,"title":"28: 서울 관악구 신림동 94-25"},
+    {"lat":"37.4766825","lng":"126.9385664","number":29,"title":"29: 서울 관악구 신림동 94-25"},
+    {"lat":"37.4766825","lng":"126.9385664","number":30,"title":"30: 서울 관악구 신림동 94-25"},
+    {"lat":"37.4778280","lng":"126.9370277","number":31,"title":"31: 서울 관악구 신림동 92-219"},
+    {"lat":"37.5314866","lng":"126.8588806","number":32,"title":"32: 서울 강서구 화곡동 840-3"},
+    {"lat":"37.5473816","lng":"126.8443724","number":33,"title":"33: 서울 강서구 화곡동 83-8"},
+    {"lat":"37.5459799","lng":"126.8498031","number":34,"title":"34: 서울 강서구 화곡동 772-4"},
+    {"lat":"37.5416259","lng":"126.8477610","number":35,"title":"35: 서울 강서구 화곡동 59"},
+    {"lat":"37.5397520","lng":"126.8514928","number":36,"title":"36: 서울 강서구 화곡동 56-609"},
+    {"lat":"37.5352938","lng":"126.8547821","number":37,"title":"37: 서울 강서구 화곡동 458-25"},
+    {"lat":"37.5382175","lng":"126.8503820","number":38,"title":"38: 서울 강서구 화곡동 410-263"},
+    {"lat":"37.5373213","lng":"126.8465673","number":39,"title":"39: 서울 강서구 화곡동 410-118"},
+    {"lat":"37.5369443","lng":"126.8451400","number":40,"title":"40: 서울 강서구 화곡동 408-56"},
+    {"lat":"37.5349617","lng":"126.8432664","number":41,"title":"41: 서울 강서구 화곡동 351-36"},
+    {"lat":"37.5454507","lng":"126.8469115","number":42,"title":"42: 서울 강서구 화곡동 24-148"},
+    {"lat":"37.5350671","lng":"126.8529576","number":43,"title":"43: 서울 강서구 화곡동 161-36"},
+    {"lat":"37.5427927","lng":"126.8330366","number":44,"title":"44: 서울 강서구 화곡동 1040"},
+    {"lat":"37.5775226","lng":"126.8158872","number":45,"title":"45: 서울 강서구 방화동 323-3,"},
+    {"lat":"37.5776258","lng":"126.8187169","number":46,"title":"46: 서울 강서구 방화동 134-10"},
+    {"lat":"37.6459746","lng":"127.0213506","number":47,"title":"47: 서울 강북구 수유동 252-23"},
+    {"lat":"37.6197193","lng":"127.0265323","number":48,"title":"48: 서울 강북구 미아동 325-1"},
+    {"lat":"37.5407068","lng":"127.1432566","number":49,"title":"49: 서울 강동구 길동 350-3"}];
+
+    // 마커와 정보창을 추가하는 함수
+    function addMarkers(map, markerData) {
+      var idx = 1;
+      markerData.forEach(function (data) {
+        var content = `
+        <div class="custom-marker">
+          <div class="number">${data.number}</div>
+        </div>
+      `;
+      
+        // 마커 위치 설정
+        var position = new naver.maps.LatLng(data.lat, data.lng);
+
+        // 마커 생성
+        var marker = new naver.maps.Marker({
+          position: position,
+          map: map,
+          title: data.title,
+          icon: {
+            content: content, // 커스텀 마커 모양 추가
+            anchor: new naver.maps.Point(20, 40) // 핀 모양에 맞게 앵커 설정
+          }
+
+        });
+
+        // 정보창 생성
+        var infowindow = new naver.maps.InfoWindow({
+          content: '<div style="padding:10px;">' + data.title + '</div>'
+        });
+
+        // 마커 생성 직후 정보창 열기
+        infowindow.open(map, marker);
+
+        // 마커 클릭 시에도 정보창 열리도록 이벤트 추가
+        naver.maps.Event.addListener(marker, 'click', function () {
+          infowindow.open(map, marker);
+        });
+      });
+    }
+
+    // 마커 추가 함수 호출
+    addMarkers(map, markerData);
+  </script>
+</body>
+
+</html>
